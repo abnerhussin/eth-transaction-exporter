@@ -19,7 +19,7 @@ class CSVWriter:
             "Gas Fee (ETH)",
         ]
 
-        with open(filename, "w", newline="") as csvfile:
+        with open(filename, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 

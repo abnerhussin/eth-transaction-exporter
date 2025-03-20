@@ -25,6 +25,7 @@ class EtherscanService:
                         f"Failed to fetch data after {MAX_RETRIES} attempts: {str(e)}"
                     )
                 time.sleep(1 * (attempt + 1))  # Exponential backoff
+        return {}
 
     def get_external_transactions(self, address: str) -> List[Dict]:
         params = {

@@ -1,7 +1,6 @@
 import argparse
-from services.etherscan_service import EtherscanService
-from services.transaction_processor import TransactionProcessor
-from utils.csv_writer import CSVWriter
+from src.services import EtherscanService, TransactionProcessor
+from src.utils import CSVWriter
 
 
 def main():
