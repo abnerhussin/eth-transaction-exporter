@@ -2,6 +2,7 @@ import time
 from typing import List, Dict
 import requests
 from ..config import ETHERSCAN_API_KEY, ETHERSCAN_API_URL, REQUEST_DELAY, MAX_RETRIES
+from ..exceptions import EtherscanAPIError
 
 
 class EtherscanService:
@@ -17,14 +18,19 @@ class EtherscanService:
                     self.base_url, params={**params, "apikey": self.api_key}
                 )
                 response.raise_for_status()
-                time.sleep(REQUEST_DELAY)  # Rate limiting
-                return response.json()
+                data = response.json()
+
+                if data.get("status") == "0":
+                    raise EtherscanAPIError(data.get("message", "Unknown API error"))
+
+                time.sleep(REQUEST_DELAY)
+                return data
             except requests.exceptions.RequestException as e:
                 if attempt == MAX_RETRIES - 1:
-                    raise Exception(
-                        f"Failed to fetch data after {MAX_RETRIES} attempts: {str(e)}"
+                    raise EtherscanAPIError(
+                        f"Failed after {MAX_RETRIES} attempts: {str(e)}"
                     )
-                time.sleep(1 * (attempt + 1))  # Exponential backoff
+                time.sleep(1 * (attempt + 1))
         return {}
 
     def get_external_transactions(self, address: str) -> List[Dict]:
